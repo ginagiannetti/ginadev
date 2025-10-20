@@ -29,6 +29,13 @@
     --shadow:#c1b3ff;
   }
 
+  @font-face {
+  font-family: "Harnold Pixel";
+  src: url("assets/HarnoldPixel-Regular_demo.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
   
 
   * { box-sizing: border-box; }
@@ -81,8 +88,8 @@
     display:flex; align-items:center; justify-content:center;
   }
   .logo{
-    font-family:"Press Start 2P", cursive;
-    font-size: clamp(18px, 2.2vw, 28px);
+    font-family:"Harnold Pixel", cursive;
+    font-size: 50px;
     color: var(--ink);
     text-shadow: 2px 2px var(--violet);
     text-align: center;
@@ -290,7 +297,7 @@
 
   <div class="wrap">
     <header class="site">
-      <div class="logo">✨ Gina’s Cosmic Corner ✨</div>
+      <div class="logo">Gina’s Cosmic Corner</div>
     </header>
 
     <!-- LEFT COLUMN: navigation + bio/contact windows -->
