@@ -27,7 +27,12 @@
     --ink:#2c2137;
     --white:#fff;
     --shadow:#c1b3ff;
+    --bg-url: url('assets/backgrounds/light.jpeg');
   }
+
+  :root[data-theme="dark"]{
+  --bg-url: url('assets/backgrounds/dark.jpeg');
+}
 
   @font-face {
   font-family: "Harnold Pixel";
@@ -48,8 +53,8 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     color: var(--ink);
-    background-image: url('assets/backgrounds/pink_grid.jpeg');
-    background-size: cover;
+    background-image: var(--bg-url);
+    background-size: contain;
     overflow-x:hidden;
   }
 
@@ -62,6 +67,23 @@
     pointer-events:none;
     mix-blend-mode: soft-light;
   }
+
+  /* Toggle button styling */
+  .mode-toggle{
+    position: fixed;
+    left: 14px;
+    top: 14px;
+    z-index: 99;
+    display: inline-flex; align-items: center; gap: 8px;
+    border:2px solid var(--violet);
+    background: var(--lav);
+    color: var(--ink);
+    padding:6px 10px;
+    font-weight:700;
+    box-shadow: 3px 3px 0 0 var(--shadow);
+    cursor:pointer;
+  }
+  .mode-toggle:hover{ transform: translate(-1px, -1px); }
 
   /* Floating twinkle stars */
   .stars{ position:fixed; inset:0; pointer-events:none; z-index:0; }
@@ -162,8 +184,10 @@
     box-shadow: 3px 3px 0 0 var(--shadow);
     transition: transform .12s ease, background .12s ease;
   }
-  .pill:hover{ transform: translate(-2px, -2px); background: var(--pink-2); }
-
+  .pill:hover{ 
+    transform: translate(-2px, -2px); 
+    background: var(--pink-2); 
+  }
   
   dl{ display:grid; grid-template-columns: auto 1fr; gap:16px 10px; margin:0; }
   dt{ font-weight:700 }
@@ -180,7 +204,6 @@
     height:64px; 
     border:2px solid var(--violet); 
     border-radius:8px;
-    /* background: linear-gradient(135deg, var(--pink), var(--lav)); */
     background-repeat: no-repeat;      
     background-position: center;       
     background-size: cover;            
@@ -248,7 +271,7 @@
 .icon {
   width: 16px;
   height: 16px;
-  fill: currentColor;             /* inherits text color */
+  fill: currentColor;      
   vertical-align: -2px;        
 }
 .icon.pixel path {
@@ -283,13 +306,20 @@
   .petal{ animation: none; }
 }
 
+@media only screen and (max-width: 700px) {
+  .dog-scene{
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
 </style>
 </head>
 <body>
-  <!-- <button id="modeToggle" class="mode-toggle" type="button" aria-label="toggle dark mode">
+  <button id="modeToggle" class="mode-toggle" type="button" aria-label="toggle dark mode">
   <svg class="icon pixel" aria-hidden="true"><use href="#i-moon"/></svg>
-  <span>dark mode</span>
-</button> -->
+  <span id="modeLabel">dark mode</span>
+</button>
 
   <div class="stars" id="stars"></div>
   <div class="rain" aria-hidden="true"></div>
@@ -407,8 +437,8 @@
           <div class="icons"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
         </div>
         <div class="dog-scene">
-          <iframe src="https://gina.dev/doggy/?embed=1&dog=mini_poodle&variant=1&room=cute" width="324" height="324" style="border:0; aspect-ratio: 1 / 1;" allow="gamepad *"></iframe>
-          <div class="dog-text">
+          <iframe id="dogIframe" src="https://gina.dev/doggy/?embed=1&dog=mini_poodle&variant=1&room=cute" width="324" height="324" style="border:0; aspect-ratio: 1 / 1;" allow="gamepad *"></iframe>
+          <div class="dog-text content">
             <p>I did it! I finally made my first game in Godot, it's a very simple ambient doggy that wanders around, sits down, sleeps and entertains itself.</p>
             <p>The doggy will just happily live on your page, you can click on them for love, and their food and water can run out, you can click it to top it up, but no harm will ever come to them.</p>
             <p>If you'd like your own doggy then click the cog in the top right, go back to the menu and select your own dog and room of choice. Then come back to the cog and embed them using the code onto your own page.</p>
@@ -491,6 +521,9 @@ nobody did, I was 12 and there was no SEO and no way of finding my site. But sti
     <symbol id="i-music" viewBox="0 0 16 16">
       <path d="M9 1h2v8H9z M11 1h3v3h-3z M6 9h5v4H6z"/>
     </symbol>
+    <symbol id="i-moon" viewBox="0 0 16 16">
+      <path d="M9 1a6 6 0 1 0 6 6A5 5 0 0 1 9 1z"/>
+    </symbol>
 
   </defs>
 </svg>
@@ -538,6 +571,84 @@ nobody did, I was 12 and there was no SEO and no way of finding my site. But sti
     // continuous drizzle
     setInterval(() => { for (let i=0;i<4;i++) spawnPetal(); }, 1200);
   }
+/* ---------- dark mode start ---------- */
+(function(){
+    const STORAGE_KEY = 'theme';
+    const root  = document.documentElement;
+    const btn   = document.getElementById('modeToggle');
+    const label = document.getElementById('modeLabel');
+    const dogIframe = document.getElementById('dogIframe');
+
+    const LIGHT_DOG_URL = 'https://gina.dev/doggy/?embed=1&dog=mini_poodle&variant=1&room=cute';
+    const DARK_DOG_URL  = 'https://gina.dev/doggy/?embed=1&dog=corgi&variant=3&room=goth';
+
+    const LIGHT_BG_SIZE = 'contain';  
+    const DARK_BG_SIZE  = 'cover';
+
+    const LIGHT_TITLEBAR = '#dec2ee';
+    const DARK_TITLEBAR  = '#7964a7';
+
+    const LIGHT_WINDOW_BG = "#ffffff";
+    const DARK_WINDOW_BG = "#5a5493";
+    const LIGHT_WINDOW_COL = "#000000";
+    const DARK_WINDOW_COL = "#ffffff"
+
+    function setBackgroundSize(value){
+      document.body.style.backgroundSize = value;
+    }
+    function setDogUrl(url){
+      if (dogIframe && url) dogIframe.src = url;
+    }
+
+    function setTitlebarColor(color){
+      document.querySelectorAll('.titlebar').forEach(el => {
+        el.style.backgroundColor = color;
+      });
+    }
+
+    function setWindowColor(bg_col, font_col){
+      document.querySelectorAll('.content').forEach(el => {
+        el.style.backgroundColor = bg_col;
+        el.style.color = font_col
+      });
+    }
+
+    const saved = localStorage.getItem(STORAGE_KEY);
+    const initial = saved || 'light';
+
+    function applyTheme(theme){
+      if (theme === 'dark') {
+        root.setAttribute('data-theme','dark');
+        label.textContent = 'light mode';
+        btn.setAttribute('aria-label','switch to light mode');
+
+        setBackgroundSize(DARK_BG_SIZE);
+        setDogUrl(DARK_DOG_URL);
+        setTitlebarColor(DARK_TITLEBAR);
+        setWindowColor(DARK_WINDOW_BG, DARK_WINDOW_COL)
+      } else {
+        root.removeAttribute('data-theme'); 
+        label.textContent = 'dark mode';
+        btn.setAttribute('aria-label','switch to dark mode');
+
+        setBackgroundSize(LIGHT_BG_SIZE);
+        setDogUrl(LIGHT_DOG_URL);
+        setTitlebarColor(LIGHT_TITLEBAR);
+        setWindowColor(LIGHT_WINDOW_BG, LIGHT_WINDOW_COL);
+      }
+    }
+
+    applyTheme(initial);
+
+    btn.addEventListener('click', () => {
+      const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+      localStorage.setItem(STORAGE_KEY, next);
+    });
+  })();
+  /* ---------- dark mode end ---------- */
+
+  /* ---------- Music player start ---------- */
 
   const playlist = [
   { title: "Cozy Evening Coffee Time", src: "assets/music/Cozy-Evening-Coffee-Time_AdobeStock_881792350.wav",cover: "assets/music/covers/blue_moon.jpeg" },
@@ -640,9 +751,9 @@ nobody did, I was 12 and there was no SEO and no way of finding my site. But sti
     /* init */
     audio.volume = +vol.value;
     load(0);
+    /* ---------- Music player end  ---------- */
 
 </script>
-<script data-goatcounter="https://ginadev.goatcounter.com/count"
-        async src="//gc.zgo.at/count.js"></script>
+<script data-goatcounter="https://ginadev.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
