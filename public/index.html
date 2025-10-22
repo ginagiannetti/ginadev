@@ -19,7 +19,6 @@
   /* ------------------ Theme ------------------ */
   :root{
     --pink: #ffd3ec;
-    --pink-2:#fbc4d9;
     --lav:#e9ddff;
     --lav-2:#d9ccff;
     --violet:#a88ff4;
@@ -27,7 +26,10 @@
     --ink:#2c2137;
     --white:#fff;
     --shadow:#c1b3ff;
+    --dark: #5a5493;
     --bg-url: url('assets/backgrounds/light.jpeg');
+    --link: #C683E6;
+    --link-hover: #5a5493;
   }
 
   :root[data-theme="dark"]{
@@ -45,6 +47,13 @@
 
   * { box-sizing: border-box; }
   html,body{ height:100%; }
+  a{
+    color: var(--link);
+    transition: color .15s ease;
+  }
+  a:hover, a:focus-visible{
+    color:var(--link-hover)
+  }
   body{
     margin:0;
     font-family: "Pixelify Sans", sans-serif;
@@ -78,7 +87,7 @@
     border:2px solid var(--violet);
     background: var(--lav);
     color: var(--ink);
-    padding:6px 10px;
+    padding:6px 5px;
     font-weight:700;
     box-shadow: 3px 3px 0 0 var(--shadow);
     cursor:pointer;
@@ -109,7 +118,7 @@
     grid-column:1 / -1;
     display:flex; align-items:center; justify-content:center;
   }
-  .logo{
+  #logo{
     font-family:"Harnold Pixel", cursive;
     font-size: 50px;
     color: var(--ink);
@@ -186,7 +195,7 @@
   }
   .pill:hover{ 
     transform: translate(-2px, -2px); 
-    background: var(--pink-2); 
+    background: var(--dark); 
   }
   
   dl{ display:grid; grid-template-columns: auto 1fr; gap:16px 10px; margin:0; }
@@ -216,7 +225,7 @@
   }
 
   /* Footer 88x31 button bar */
-  .badges{
+  #badges{
     display:flex; gap:8px; flex-wrap:wrap; justify-content:center;
     padding:14px;
     border:3px solid var(--violet);
@@ -327,7 +336,7 @@
 
   <div class="wrap">
     <header class="site">
-      <div class="logo">Gina’s Cosmic Corner</div>
+      <div id="logo">Gina’s Cosmic Corner</div>
     </header>
 
     <!-- LEFT COLUMN: navigation + bio/contact windows -->
@@ -482,8 +491,7 @@ nobody did, I was 12 and there was no SEO and no way of finding my site. But sti
 
     <!-- FOOTER -->
     <footer class="site">
-      <div class="badges" aria-label="88x31 button bar">
-        <img alt="made with love" src="https://dummyimage.com/88x31/ffffff/7a5ad6&text=made+with+%E2%99%A1">
+      <div id="badges" aria-label="88x31 button bar">
         <a href="https://lovesick.cafe/grrrl" target="_blank"><img alt="Made by a girl" src="https://loves1ck.neocities.org/img/sozai/grrrl/madebya-04-1.png"></a>
       </div>
     </footer>
@@ -593,8 +601,19 @@ nobody did, I was 12 and there was no SEO and no way of finding my site. But sti
     const LIGHT_WINDOW_COL = "#000000";
     const DARK_WINDOW_COL = "#ffffff"
 
+    function setTitle(bg_col, font_col){
+      const title = document.getElementById('logo');
+      logo.style.backgroundColor = bg_col;
+      logo.style.color = font_col
+    }
+
     function setBackgroundSize(value){
       document.body.style.backgroundSize = value;
+    }
+
+    function setLinks(baseColor, hoverColor) {
+      if (baseColor) root.style.setProperty('--link', baseColor);
+      if (hoverColor) root.style.setProperty('--link-hover', hoverColor);
     }
     function setDogUrl(url){
       if (dogIframe && url) dogIframe.src = url;
@@ -613,6 +632,17 @@ nobody did, I was 12 and there was no SEO and no way of finding my site. But sti
       });
     }
 
+    function setInnerWindow(colour){
+      document.querySelectorAll('.card').forEach(el => {
+        el.style.backgroundColor = colour;
+      })
+    }
+
+    function setFooterBg(colour){
+     const footer = document.getElementById('badges');
+     footer.style.backgroundColor = colour
+    }
+
     const saved = localStorage.getItem(STORAGE_KEY);
     const initial = saved || 'light';
 
@@ -621,20 +651,32 @@ nobody did, I was 12 and there was no SEO and no way of finding my site. But sti
         root.setAttribute('data-theme','dark');
         label.textContent = 'light mode';
         btn.setAttribute('aria-label','switch to light mode');
+        btn.style.backgroundColor = DARK_WINDOW_BG;
+        btn.style.color = DARK_WINDOW_COL;
 
+        setLinks(LIGHT_TITLEBAR, DARK_WINDOW_COL)
         setBackgroundSize(DARK_BG_SIZE);
         setDogUrl(DARK_DOG_URL);
         setTitlebarColor(DARK_TITLEBAR);
-        setWindowColor(DARK_WINDOW_BG, DARK_WINDOW_COL)
+        setWindowColor(DARK_WINDOW_BG, DARK_WINDOW_COL);
+        setInnerWindow(DARK_WINDOW_BG);
+        setFooterBg(DARK_WINDOW_BG);
+        setTitle(DARK_WINDOW_BG, DARK_WINDOW_COL)
       } else {
         root.removeAttribute('data-theme'); 
         label.textContent = 'dark mode';
         btn.setAttribute('aria-label','switch to dark mode');
+        btn.style.backgroundColor = LIGHT_TITLEBAR;
+        btn.style.color = LIGHT_WINDOW_COL;
 
+        setLinks(LIGHT_WINDOW_COL, DARK_TITLEBAR)
         setBackgroundSize(LIGHT_BG_SIZE);
         setDogUrl(LIGHT_DOG_URL);
         setTitlebarColor(LIGHT_TITLEBAR);
         setWindowColor(LIGHT_WINDOW_BG, LIGHT_WINDOW_COL);
+        setInnerWindow(LIGHT_WINDOW_BG);
+        setFooterBg(LIGHT_WINDOW_BG);
+        setTitle(LIGHT_WINDOW_BG, LIGHT_WINDOW_COL)
       }
     }
 
