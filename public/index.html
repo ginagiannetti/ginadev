@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="crt">
 <head>
 <meta charset="utf-8" />
 <meta name="description" content="Gina.dev is the home of Gina Giannetti, Junior Software Engineer @ BBC News. Trying to make cosy, perhaps mystical games in my spare time.">
@@ -23,9 +23,9 @@
   :root{
     --pink: #ffd3ec;
     --lav:#e9ddff;
+    --pink-2: #ffd3ec;
     --lav-2:#d9ccff;
     --violet:#a88ff4;
-    --purple:#7a5ad6;
     --ink:#2c2137;
     --white:#fff;
     --shadow:#c1b3ff;
@@ -37,7 +37,7 @@
 
   :root[data-theme="dark"]{
   --bg-url: url('assets/backgrounds/dark.jpeg');
-}
+  }
 
   @font-face {
   font-family: "Harnold Pixel";
@@ -47,15 +47,39 @@
   font-display: swap;
 }
   
-
-  * { box-sizing: border-box; }
-  html,body{ height:100%; }
+  * { 
+    box-sizing: border-box; 
+  }
+  html,body{ 
+    height:100%; 
+    cursor: url("./assets/cursors/Normal_Select2.ani"),
+          url("./assets/cursors/Normal_Select.cur"),
+          auto;
+  }
   a{
     color: var(--link);
     transition: color .15s ease;
   }
   a:hover, a:focus-visible{
     color:var(--link-hover)
+  }
+  a,
+  button,input,.btn
+  [role="button"],
+  .clickable {
+    cursor: url("./assets/cursors/Link_Select.cur"), 
+    url("./assets/cursors/Link_Select.ani"),
+            pointer;
+  }
+  input[type="text"],
+  input[type="search"],
+  input[type="email"],
+  input[type="password"],
+  textarea,
+  [contenteditable="true"],
+  .selectableText {
+    cursor: url("./assets/cursors/Text_Select.cur"),
+            text;
   }
   body{
     margin:0;
@@ -69,7 +93,6 @@
     background-size: contain;
     overflow-x:hidden;
   }
-
   body::after{
     content:"";
     position:fixed; inset:0;
@@ -79,26 +102,82 @@
     pointer-events:none;
     mix-blend-mode: soft-light;
   }
+  /* crt effect */
+  .crt {
+    position: relative;
+    filter: contrast(1.1) brightness(0.9) saturate(1.2);
+    image-rendering: pixelated; 
+  }
+  .crt::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    background:
+      linear-gradient(
+        rgba(18,16,16,0) 50%,
+        rgba(0,0,0,0.25) 50%
+      ),
+      linear-gradient(
+        90deg,
+        rgba(255,0,0,0.06),
+        rgba(0,255,0,0.02),
+        rgba(0,0,255,0.06)
+      );
+    background-size: 100% 2px, 3px 100%;
+    animation: crt-flicker 1.2s infinite;
+  }
 
-  /* Toggle button styling */
+  @keyframes crt-flicker {
+    0%   { opacity: 0.95; }
+    50%  { opacity: 1;    }
+    100% { opacity: 0.9;  }
+  }
+
+
+  /* Light/dark mode button styling */
   .mode-toggle{
     position: fixed;
     left: 14px;
     top: 14px;
     z-index: 99;
-    display: inline-flex; align-items: center; gap: 8px;
+    display: inline-flex; 
+    align-items: center; 
+    gap: 8px;
     border:2px solid var(--violet);
     background: var(--lav);
     color: var(--ink);
     padding:6px 5px;
     font-weight:700;
     box-shadow: 3px 3px 0 0 var(--shadow);
-    cursor:pointer;
+    cursor: url("./assets/cursors/Link_Select.cur"), 
+    url("./assets/cursors/Link_Select.ani"),
+            pointer;
   }
-  .mode-toggle:hover{ transform: translate(-1px, -1px); }
-
+  .mode-toggle:hover{ 
+    transform: translate(-1px, -1px); 
+  }
+    /* Falling petals/stars layer */
+  .rain{
+    position: fixed; 
+    inset: 0; 
+    pointer-events: none; 
+    z-index: 0;
+  }
+  .petal{
+    position: absolute;
+    top: -10%;
+    font-size: 14px;            
+    opacity: .9;
+    filter: drop-shadow(0 0 3px rgba(255,255,255,.6));
+    animation: fall linear forwards;
+  }
   /* Floating twinkle stars */
-  .stars{ position:fixed; inset:0; pointer-events:none; z-index:0; }
+  .stars{ 
+    position:fixed; inset:0; 
+    pointer-events:none; 
+    z-index:0; }
   .star{
     position:absolute; 
     background:#fff; 
@@ -106,20 +185,38 @@
     box-shadow:0 0 8px 2px rgba(255,255,255,.7);
     animation: twinkle 3.6s ease-in-out infinite alternate;
   }
-  @keyframes twinkle { from{opacity:.35; transform:scale(.75)} to{opacity:1; transform:scale(1.2)} }
+  @keyframes twinkle { 
+    from{opacity:.35; transform:scale(.75)} 
+    to{opacity:1; transform:scale(1.2)} }
+  @keyframes fall{
+  to{
+    transform: translateY(120vh) rotate(360deg);
+    opacity: .95;
+    }
+  }
+  /* respect reduced motion */
+  @media (prefers-reduced-motion: reduce){
+    .petal{ animation: none; }
+  }
 
   /* ------------------ Layout ------------------ */
   .wrap{
-    position:relative; z-index:1;
-    max-width:1200px; margin:40px auto; padding:0 16px;
-    display:grid; gap:16px;
+    position:relative; 
+    z-index:1;
+    max-width:1200px; 
+    margin:40px auto; 
+    padding:0 16px;
+    display:grid; 
+    gap:16px;
     grid-template-columns: 250px 1fr;
     grid-template-rows: auto 1fr auto;
     min-height: calc(100vh - 80px);
   }
   header.site{
     grid-column:1 / -1;
-    display:flex; align-items:center; justify-content:center;
+    display:flex; 
+    align-items:center; 
+    justify-content:center;
   }
   #logo{
     font-family:"Harnold Pixel", cursive;
@@ -132,11 +229,21 @@
     margin: 30px 0;
     border:3px solid var(--violet);
     background: #ffffff;
+    min-height: 79px;
   }
-
-  aside.left { grid-column:1; display:flex; flex-direction:column; gap:16px; }
-  main.right { grid-column:2; display:flex; flex-direction:column; gap:16px; }
-  footer.site { grid-column:1 / -1; }
+  aside.left { 
+    grid-column:1; 
+    display:flex; 
+    flex-direction:column; 
+    gap:16px; }
+  main.right { 
+    grid-column:2; 
+    display:flex; 
+    flex-direction:column; 
+    gap:16px; }
+  footer.site { 
+    grid-column:1 / -1; 
+  }
 
   /* ------------------ Window styling ------------------ */
   .window{
@@ -145,22 +252,23 @@
     box-shadow: 3px 3px 0 0 var(--shadow);
     overflow:hidden;
   }
-
-    .titlebar.pixel {
+  .titlebar.pixel {
     font-family: "Press Start 2P", cursive;
     text-shadow: 1px 1px var(--violet);
     background:
         linear-gradient(180deg, var(--lav-2), var(--lav)),
         var(--tile-flower);
     background-size: auto, 16px 16px;
-}
-
+  }
   .titlebar{
     color: #ffffff;
-    display:flex; align-items:center; gap:10px;
+    display:flex; 
+    align-items:center; 
+    gap:10px;
     padding:8px 10px;
     border:2px solid var(--violet);
-    font-weight:600; text-transform:lowercase;
+    font-weight:600; 
+    text-transform:lowercase;
     letter-spacing:.3px;
     font-family: "Press Start 2P", cursive;
     font-size: 12px;
@@ -168,22 +276,29 @@
     background-color:#dec2ee;
   }
   .titlebar .icons{
-    margin-left:auto; display:flex; gap:6px;
+    margin-left:auto; 
+    display:flex; 
+    gap:6px;
   }
   .titlebar .dot{
-    width:14px; height:14px; border:2px solid var(--violet);
+    width:14px; 
+    height:14px; 
+    border:2px solid var(--violet);
     background: var(--pink);
-    border-radius:3px; box-shadow: inset -2px -2px 0 0 rgba(0,0,0,.06);
+    border-radius:3px; 
+    box-shadow: inset -2px -2px 0 0 rgba(0,0,0,.06);
   }
   .window .content{ 
     padding:14px 14px 18px; 
     border:2px solid var(--violet);
     margin: 4px
-}
+  }
 
   /* Nav pills */
   .nav-grid{
-    display:flex; flex-wrap:wrap; gap:8px;
+    display:flex; 
+    flex-wrap:wrap; 
+    gap:8px;
   }
   .pill{
     border:2px solid var(--violet);
@@ -199,13 +314,20 @@
   .pill:hover{ 
     transform: translate(-2px, -2px); 
     background: var(--dark); 
+    color: var(--white);
   }
   
-  dl{ display:grid; grid-template-columns: auto 1fr; gap:16px 10px; margin:0; }
-  dt{ font-weight:700 }
-  dd{ margin:0; }
-
-  /* Main content blocks */
+  dl{ 
+    display:grid; 
+    grid-template-columns: auto 1fr; 
+    gap:16px 10px; 
+    margin:0; }
+  dt{ 
+    font-weight:700 
+  }
+  dd{ 
+    margin:0; 
+  }
   .card{
     border:2px dashed var(--violet);
     background: rgba(255,255,255,.6);
@@ -220,64 +342,82 @@
     background-position: center;       
     background-size: cover;            
   }
-  .buttons-row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .buttons-row{ 
+    display:flex; 
+    gap:8px; 
+    align-items:center; 
+    flex-wrap:wrap; 
+  }
   .btn{
-    border:2px solid var(--violet); background:var(--lav-2);
-    padding:6px 10px; border-radius:8px; font-weight:700; cursor:pointer;
+    border:2px solid var(--violet); 
+    background:var(--lav-2);
+    padding:6px 10px; 
+    border-radius:8px; 
+    font-weight:700; 
     box-shadow: 3px 3px 0 0 var(--shadow);
   }
 
-  /* Footer 88x31 button bar */
+  .dog-scene{
+  display: flex;
+  }
+
+  .dog-text{
+    padding: 20px;
+  }
+
+  /* Footer */
   #badges{
-    display:flex; gap:8px; flex-wrap:wrap; justify-content:center;
+    display:flex; 
+    gap:8px; 
+    flex-wrap:wrap; 
+    justify-content:center;
     padding:14px;
     border:3px solid var(--violet);
     background: #ffffff;
     box-shadow: 6px 6px 0 0 var(--shadow);
   }
   .badges img{
-    height:50px; image-rendering: pixelated;
+    height:50px; 
+    image-rendering: pixelated;
     border:2px solid var(--violet);
     background:#fff;
     box-shadow: 3px 3px 0 0 var(--shadow);
   }
 
-  /* Responsive: stack columns on small screens */
-  @media (max-width: 860px){
-    .wrap{ grid-template-columns: 1fr; }
-    aside.left, main.right { grid-column:1; }
-  }
-
-  /* Falling petals/stars layer */
-.rain{
-  position: fixed; inset: 0; pointer-events: none; z-index: 0;
-}
-
-.petal{
-  position: absolute;
-  top: -10%;
-  font-size: 14px;            
-  opacity: .9;
-  filter: drop-shadow(0 0 3px rgba(255,255,255,.6));
-  animation: fall linear forwards;
-}
-
+/* music player */
 .progress{
-  width: 200px; height: 10px; margin:10px 0;
-  border:2px solid var(--violet); border-radius:8px;
+  width: 200px; 
+  height: 10px; 
+  margin:10px 0;
+  border:2px solid var(--violet); 
+  border-radius:8px;
   background:
     repeating-linear-gradient(90deg, rgba(168,143,244,.2) 0 8px, rgba(255,211,236,.2) 8px 16px);
   box-shadow: 2px 2px 0 0 var(--shadow);
-  cursor: pointer;
+  cursor: url("./assets/cursors/Link_Select.cur"), 
+    url("./assets/cursors/Link_Select.ani"),
+            pointer;
 }
 .progress .bar{
-  height: 100%; width: 0%;
+  height: 100%; 
+  width: 0%;
   background: linear-gradient(90deg, var(--pink-2), var(--lav-2));
   border-radius:6px;
 }
-.time{ font-size: .9rem; opacity: .9 }
-.vol { display:inline-flex; align-items:center; gap:6px; font-size:.85rem; margin-top:6px }
-.vol input{ accent-color: var(--violet); }
+.time{ 
+  font-size: .9rem; 
+  opacity: .9 
+}
+.vol { 
+  display:inline-flex; 
+  align-items:center; 
+  gap:6px; 
+  font-size:.85rem; 
+  margin-top:6px 
+}
+.vol input{ 
+  accent-color: var(--violet); 
+}
 
 /* Pixel-style SVG icons */
 .icon {
@@ -296,34 +436,17 @@
   align-items: center;
   gap: 6px;
 }
-.tiny{ font-size:.85rem; opacity:.9 }
-
-.dog-scene{
-  display: flex;
-}
-
-.dog-text{
-  padding: 20px;
-}
-
-@keyframes fall{
-  to{
-    transform: translateY(120vh) rotate(360deg);
-    opacity: .95;
-  }
-}
-
-/* respect reduced motion */
-@media (prefers-reduced-motion: reduce){
-  .petal{ animation: none; }
-}
-
 @media only screen and (max-width: 700px) {
   .dog-scene{
     flex-direction: column;
     align-items: center;
   }
 }
+  /* Responsive: stack columns on small screens */
+  @media (max-width: 860px){
+    .wrap{ grid-template-columns: 1fr; }
+    aside.left, main.right { grid-column:1; }
+  }
 
 </style>
 </head>
@@ -353,13 +476,13 @@
         <div class="content">
           <dl>
             <dt>name</dt><dd>Gina</dd>
-            <dt>vibe</dt><dd>pastel celestial, cozy games, crackling candles, slipper socks</dd>
+            <dt>vibe</dt><dd>pastel, celestial, cosy games, crackling candles, slipper socks</dd>
             <dt>hobbies</dt><dd>crochet, sewing, knitting, coding, playing games, youtube</dd>
           </dl>
         </div>
       </section>
 
-        <section id="music" class="window">
+      <section id="music" class="window">
         <div class="titlebar">
           <svg class="icon pixel" aria-hidden="true"><use href="#i-music"/></svg>
           <span>music player</span>
@@ -391,7 +514,6 @@
 
         <audio id="audio" preload="metadata"></audio>
         </div>
-
       </section>
 
        <section class="window">
@@ -401,7 +523,7 @@
           <div class="icons"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
         </div>
         <div class="content">
-          <img src="https://gina.dev/assets/ginadev_banner.gif" alt="Gina.dev banner">
+          <img src="https://gina.dev/assets/ginadev_banner.gif" alt="Gina.dev banner" loading="lazy" width="88" height="30">
           <textarea><a href="https://gina.dev"><img src="https://gina.dev/assets/ginadev_banner.gif"></a></textarea>
         </div>
       </section>
@@ -415,6 +537,7 @@
         <div class="content buttons-row">
           <a class="pill" target="_blank" href="mailto:hello@gina.dev" aria-label="mail">hello@gina.dev</a>
           <a class="pill" target="_blank" href="https://ginagiannetti.itch.io" aria-label="itch">itch.io</a>
+          <a class="pill" target="_blank" href="https://bsky.app/profile/gina.dev" aria-label="itch">bluesky</a>
         </div>
       </section>
     </aside>
@@ -477,33 +600,32 @@ nobody did, I was 12 and there was no SEO and no way of finding my site. But sti
         </div>
         </section>
 
-      <section id="devlog" class="window">
-        <div class="titlebar">
-          <svg class="icon pixel" aria-hidden="true"><use href="#i-games"/></svg>
-          <span>devlog</span>
-          <div class="icons"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
-        </div>
-        <bsky-embed
-          username="gina.dev"
-          limit="5"
-          load-more="true"
-        >
-        </bsky-embed>
-      </section>
+        <section id="devlog" class="window">
+          <div class="titlebar">
+            <svg class="icon pixel" aria-hidden="true"><use href="#i-games"/></svg>
+            <span>devlog</span>
+            <div class="icons"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+          </div>
+          <bsky-embed
+            username="gina.dev"
+            limit="5"
+            load-more="true"
+          >
+          </bsky-embed>
+        </section>
     </main>
 
     <!-- FOOTER -->
     <footer class="site">
       <div id="badges" aria-label="88x31 button bar">
-        <a href="https://lovesick.cafe/grrrl" target="_blank"><img alt="Made by a girl" src="https://loves1ck.neocities.org/img/sozai/grrrl/madebya-04-1.png"></a>
+        <a href="https://lovesick.cafe/grrrl" target="_blank"><img alt="Made by a girl" src="https://loves1ck.neocities.org/img/sozai/grrrl/madebya-04-1.png" loading="lazy" height="51" width="72"></a>
       </div>
     </footer>
   </div>
 
-  <!-- pixel icon sprite -->
+  <!-- pixel icon sprites -->
 <svg width="0" height="0" style="position:absolute">
   <defs>
-    <!-- All icons drawn on a 16x16 grid with crisp edges -->
     <symbol id="i-home" viewBox="0 0 16 16">
       <path d="M1 7 L8 1 L15 7 V15 H10 V10 H6 V15 H1 Z"/>
     </symbol>
@@ -535,12 +657,13 @@ nobody did, I was 12 and there was no SEO and no way of finding my site. But sti
     <symbol id="i-moon" viewBox="0 0 16 16">
       <path d="M9 1a6 6 0 1 0 6 6A5 5 0 0 1 9 1z"/>
     </symbol>
-
   </defs>
 </svg>
 
 
 <script>
+  // --- falling stars/flowers start --- //
+  
   // sprinkle 40 twinkling stars
   const box = document.getElementById('stars');
   for(let i=0;i<40;i++){
@@ -554,7 +677,7 @@ nobody did, I was 12 and there was no SEO and no way of finding my site. But sti
     box.appendChild(s);
   }
 
-  // --- falling stars/flowers ---
+  
   const rain = document.querySelector('.rain');
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -582,114 +705,108 @@ nobody did, I was 12 and there was no SEO and no way of finding my site. But sti
     // continuous drizzle
     setInterval(() => { for (let i=0;i<4;i++) spawnPetal(); }, 1200);
   }
-/* ---------- dark mode start ---------- */
+// --- falling stars/flowers end --- //
+// ---------- dark mode start ---------- //
 (function(){
-    const STORAGE_KEY = 'theme';
     const root  = document.documentElement;
     const btn   = document.getElementById('modeToggle');
-    const label = document.getElementById('modeLabel');
-    const dogIframe = document.getElementById('dogIframe');
-
-    const LIGHT_DOG_URL = 'https://gina.dev/doggy/?embed=1&dog=mini_poodle&variant=1&room=cute';
-    const DARK_DOG_URL  = 'https://gina.dev/doggy/?embed=1&dog=corgi&variant=3&room=goth';
-
-    const LIGHT_BG_SIZE = 'contain';  
-    const DARK_BG_SIZE  = 'cover';
-
-    const LIGHT_TITLEBAR = '#dec2ee';
-    const DARK_TITLEBAR  = '#7964a7';
-
-    const LIGHT_WINDOW_BG = "#ffffff";
-    const DARK_WINDOW_BG = "#5a5493";
-    const LIGHT_WINDOW_COL = "#000000";
-    const DARK_WINDOW_COL = "#ffffff"
-
-    function setTitle(bg_col, font_col){
-      const title = document.getElementById('logo');
-      logo.style.backgroundColor = bg_col;
-      logo.style.color = font_col
-    }
-
-    function setBackgroundSize(value){
-      document.body.style.backgroundSize = value;
-    }
-
-    function setLinks(baseColor, hoverColor) {
-      if (baseColor) root.style.setProperty('--link', baseColor);
-      if (hoverColor) root.style.setProperty('--link-hover', hoverColor);
-    }
-    function setDogUrl(url){
-      if (dogIframe && url) dogIframe.src = url;
-    }
-
-    function setTitlebarColor(color){
-      document.querySelectorAll('.titlebar').forEach(el => {
-        el.style.backgroundColor = color;
-      });
-    }
-
-    function setWindowColor(bg_col, font_col){
-      document.querySelectorAll('.content').forEach(el => {
-        el.style.backgroundColor = bg_col;
-        el.style.color = font_col
-      });
-    }
-
-    function setInnerWindow(colour){
-      document.querySelectorAll('.card').forEach(el => {
-        el.style.backgroundColor = colour;
-      })
-    }
-
-    function setFooterBg(colour){
-     const footer = document.getElementById('badges');
-     footer.style.backgroundColor = colour
-    }
-
-    const saved = localStorage.getItem(STORAGE_KEY);
-    const initial = saved || 'light';
-
-    function applyTheme(theme){
-      if (theme === 'dark') {
-        root.setAttribute('data-theme','dark');
-        label.textContent = 'light mode';
-        btn.setAttribute('aria-label','switch to light mode');
-        btn.style.backgroundColor = DARK_WINDOW_BG;
-        btn.style.color = DARK_WINDOW_COL;
-
-        setLinks(LIGHT_TITLEBAR, DARK_WINDOW_COL)
-        setBackgroundSize(DARK_BG_SIZE);
-        setDogUrl(DARK_DOG_URL);
-        setTitlebarColor(DARK_TITLEBAR);
-        setWindowColor(DARK_WINDOW_BG, DARK_WINDOW_COL);
-        setInnerWindow(DARK_WINDOW_BG);
-        setFooterBg(DARK_WINDOW_BG);
-        setTitle(DARK_WINDOW_BG, DARK_WINDOW_COL)
-      } else {
-        root.removeAttribute('data-theme'); 
-        label.textContent = 'dark mode';
-        btn.setAttribute('aria-label','switch to dark mode');
-        btn.style.backgroundColor = LIGHT_TITLEBAR;
-        btn.style.color = LIGHT_WINDOW_COL;
-
-        setLinks(LIGHT_WINDOW_COL, DARK_TITLEBAR)
-        setBackgroundSize(LIGHT_BG_SIZE);
-        setDogUrl(LIGHT_DOG_URL);
-        setTitlebarColor(LIGHT_TITLEBAR);
-        setWindowColor(LIGHT_WINDOW_BG, LIGHT_WINDOW_COL);
-        setInnerWindow(LIGHT_WINDOW_BG);
-        setFooterBg(LIGHT_WINDOW_BG);
-        setTitle(LIGHT_WINDOW_BG, LIGHT_WINDOW_COL)
-      }
-    }
-
-    applyTheme(initial);
-
+    
     btn.addEventListener('click', () => {
-      const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      applyTheme(next);
-      localStorage.setItem(STORAGE_KEY, next);
-    });
+      const label = document.getElementById('modeLabel');
+      const dogIframe = document.getElementById('dogIframe');
+
+      const LIGHT_DOG_URL = 'https://gina.dev/doggy/?embed=1&dog=mini_poodle&variant=1&room=cute';
+      const DARK_DOG_URL  = 'https://gina.dev/doggy/?embed=1&dog=corgi&variant=3&room=goth';
+
+      const LIGHT_BG_SIZE = 'contain';  
+      const DARK_BG_SIZE  = 'cover';
+
+      const LIGHT_TITLEBAR = '#dec2ee';
+      const DARK_TITLEBAR  = '#7964a7';
+
+      const LIGHT_WINDOW_BG = "#ffffff";
+      const DARK_WINDOW_BG = "#5a5493";
+      const LIGHT_WINDOW_COL = "#000000";
+      const DARK_WINDOW_COL = "#ffffff"
+
+      function setTitle(bg_col, font_col){
+        const title = document.getElementById('logo');
+        logo.style.backgroundColor = bg_col;
+        logo.style.color = font_col
+      }
+
+      function setBackgroundSize(value){
+        document.body.style.backgroundSize = value;
+      }
+
+      function setLinks(baseColor, hoverColor) {
+        if (baseColor) root.style.setProperty('--link', baseColor);
+        if (hoverColor) root.style.setProperty('--link-hover', hoverColor);
+      }
+      function setDogUrl(url){
+        if (dogIframe && url) dogIframe.src = url;
+      }
+
+      function setTitlebarColor(color){
+        document.querySelectorAll('.titlebar').forEach(el => {
+          el.style.backgroundColor = color;
+        });
+      }
+
+      function setWindowColor(bg_col, font_col){
+        document.querySelectorAll('.content').forEach(el => {
+          el.style.backgroundColor = bg_col;
+          el.style.color = font_col
+        });
+      }
+
+      function setInnerWindow(colour){
+        document.querySelectorAll('.card').forEach(el => {
+          el.style.backgroundColor = colour;
+        })
+      }
+
+      function setFooterBg(colour){
+      const footer = document.getElementById('badges');
+      footer.style.backgroundColor = colour
+      }
+
+      function applyTheme(theme){
+        if (theme === 'dark') {
+          root.setAttribute('data-theme','dark');
+          label.textContent = 'light mode';
+          btn.setAttribute('aria-label','switch to light mode');
+          btn.style.backgroundColor = DARK_WINDOW_BG;
+          btn.style.color = DARK_WINDOW_COL;
+
+          setLinks(LIGHT_TITLEBAR, DARK_WINDOW_COL)
+          setBackgroundSize(DARK_BG_SIZE);
+          setDogUrl(DARK_DOG_URL);
+          setTitlebarColor(DARK_TITLEBAR);
+          setWindowColor(DARK_WINDOW_BG, DARK_WINDOW_COL);
+          setInnerWindow(DARK_WINDOW_BG);
+          setFooterBg(DARK_WINDOW_BG);
+          setTitle(DARK_WINDOW_BG, DARK_WINDOW_COL)
+        } else {
+          root.removeAttribute('data-theme'); 
+          label.textContent = 'dark mode';
+          btn.setAttribute('aria-label','switch to dark mode');
+          btn.style.backgroundColor = LIGHT_TITLEBAR;
+          btn.style.color = LIGHT_WINDOW_COL;
+
+          setLinks(LIGHT_WINDOW_COL, DARK_TITLEBAR)
+          setBackgroundSize(LIGHT_BG_SIZE);
+          setDogUrl(LIGHT_DOG_URL);
+          setTitlebarColor(LIGHT_TITLEBAR);
+          setWindowColor(LIGHT_WINDOW_BG, LIGHT_WINDOW_COL);
+          setInnerWindow(LIGHT_WINDOW_BG);
+          setFooterBg(LIGHT_WINDOW_BG);
+          setTitle(LIGHT_WINDOW_BG, LIGHT_WINDOW_COL)
+        }
+      }
+        const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        applyTheme(next);
+      });
   })();
   /* ---------- dark mode end ---------- */
 
